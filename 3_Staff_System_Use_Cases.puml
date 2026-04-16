@@ -1,0 +1,59 @@
+@startuml Staff_System_Use_Cases
+
+title Smart Hostel Maintenance System — Staff & System Modules
+caption CS415 Software Engineering | Group 11 | Ashesi University
+
+left to right direction
+
+actor "Maintenance\nStaff" as M
+actor "System" as SYS
+
+rectangle "System Boundary" {
+
+  usecase "Login with\nstaff credentials" as UC1
+  usecase "View assigned\ntasks list" as UC2
+  usecase "View task detail\n& image" as UC3
+  usecase "Update task status\n(Pending → In Progress\n→ Completed)" as UC4
+  usecase "View active\ntask count" as UC5
+
+  usecase "Enforce role-based\naccess control" as UC_RBAC
+  usecase "Hash password\n(bcrypt)" as UC_HASH
+  usecase "Auto-logout on\nsession timeout\n(15 min)" as UC_TIMEOUT
+  usecase "Rate limit\nlogin attempts" as UC_RATE
+  usecase "Send email\nnotification" as UC_EMAIL
+  usecase "In-app notification\n(bell icon)" as UC_BELL
+  usecase "Record in\nstatus history" as UC_LOG
+  usecase "Validate file\nupload" as UC_VAL
+  usecase "Structured error\nlogging" as UC_ERR
+  usecase "Daily database\nbackup" as UC_BACKUP
+}
+
+M --> UC1
+M --> UC2
+M --> UC3
+M --> UC4
+M --> UC5
+
+SYS --> UC_RBAC
+SYS --> UC_HASH
+SYS --> UC_TIMEOUT
+SYS --> UC_RATE
+SYS --> UC_EMAIL
+SYS --> UC_BELL
+SYS --> UC_VAL
+SYS --> UC_ERR
+SYS --> UC_BACKUP
+
+UC1 ..> UC_RBAC : <<include>>
+UC1 ..> UC_HASH : <<include>>
+UC4 ..> UC_LOG : <<include>>
+UC4 ..> UC_EMAIL : <<include>>
+UC4 ..> UC_BELL : <<include>>
+
+note right of UC4
+  Status flow is strict:
+  Pending → In Progress → Completed
+  Skipping steps is blocked
+end note
+
+@enduml

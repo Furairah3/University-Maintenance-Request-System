@@ -4,15 +4,14 @@
  * Smart Hostel Maintenance System
  */
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'hostel_maintenance');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_CHARSET', 'utf8mb4');
 
+define('DB_HOST', 'sql111.infinityfree.com');
+define('DB_NAME', 'if0_41681787_hostel_maintenance');
+define('DB_USER', 'if0_41681787');
+define('DB_PASS', 'your_password_here');  // the password you set on InfinityFree
+define('APP_URL', '');  // leave empty for now, it works better with relative paths
 // Application settings
 define('APP_NAME', 'Smart Hostel Maintenance');
-define('APP_URL', 'http://localhost/hostel-system');
 define('APP_VERSION', '1.0.0');
 
 // Session settings

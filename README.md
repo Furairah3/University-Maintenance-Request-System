@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Smart Hostel Maintenance Request System
 
 **CS415 Software Engineering | Group 11 | Ashesi University**
@@ -141,3 +142,7 @@ hostel-system/
 ## License
 
 This project is developed for academic purposes at Ashesi University.
+=======
+# University-Maintenance-Request-System.
+The system is a web application with three types of users: students, administrators, and maintenance staff. Each user group has its own login and sees only the pages and data relevant to their role. The frontend is built with HTML, CSS, and JavaScript. The backend is handled by PHP, which communicates with a MySQL database.
+>>>>>>> 30f16696f9a0fb11fa40f5394a06928660e7607a
