@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/../frontend/includes/student-header.php';
 ?>
 
-<div class="card" style="max-width:700px;">
+<div class="card form-max-width">
     <div class="card-header">
         <h3>Submit Maintenance Request</h3>
     </div>
@@ -125,12 +125,12 @@ include __DIR__ . '/../frontend/includes/student-header.php';
                     <p>Click to upload a photo of the issue</p>
                     <p class="file-info">JPEG or PNG, max 5 MB</p>
                 </div>
-                <div id="imagePreview" class="image-preview" style="display:none;">
+                <div id="imagePreview" class="image-preview image-preview-container">
                     <img id="previewImg" src="" alt="Preview">
                 </div>
             </div>
 
-            <div style="display:flex;gap:12px;">
+            <div class="flex gap-lg">
                 <button type="submit" class="btn btn-primary">Submit Request</button>
                 <a href="dashboard.php" class="btn btn-secondary">Cancel</a>
             </div>

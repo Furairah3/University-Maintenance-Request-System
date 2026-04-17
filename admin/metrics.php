@@ -6,26 +6,54 @@ Auth::requireRole('admin');
 $db = Database::getInstance();
 $pageTitle = 'Metrics';
 
-// Top-line KPIs from the admin metrics view
-$kpi = $db->fetchOne("SELECT * FROM vw_admin_metrics") ?: [];
+// Top-line KPIs (direct query instead of vw_admin_metrics)
+$kpi = $db->fetchOne(
+    "SELECT COUNT(*) AS total_requests,
+            COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending_count,
+            COUNT(CASE WHEN status = 'In Progress' THEN 1 END) AS in_progress_count,
+            COUNT(CASE WHEN status = 'Completed' THEN 1 END) AS completed_count
+     FROM requests WHERE is_archived = 0"
+) ?: [];
+
 $totalRequests   = (int)($kpi['total_requests'] ?? 0);
 $pendingCount    = (int)($kpi['pending_count'] ?? 0);
 $inProgressCount = (int)($kpi['in_progress_count'] ?? 0);
 $completedCount  = (int)($kpi['completed_count'] ?? 0);
-$avgResponse     = $kpi['avg_response_hours'] ?? null;
-$avgCompletion   = $kpi['avg_completion_hours'] ?? null;
+
+$avgResponseRow = $db->fetchOne(
+    "SELECT ROUND(AVG(TIMESTAMPDIFF(HOUR, r.created_at, a.assigned_at)),1) AS hours
+     FROM requests r JOIN assignments a ON r.id = a.request_id WHERE r.is_archived = 0"
+);
+$avgResponse = $avgResponseRow['hours'] ?? null;
+
+$avgCompletionRow = $db->fetchOne(
+    "SELECT ROUND(AVG(TIMESTAMPDIFF(HOUR, r.created_at, r.completed_at)),1) AS hours
+     FROM requests r WHERE r.completed_at IS NOT NULL AND r.is_archived = 0"
+);
+$avgCompletion = $avgCompletionRow['hours'] ?? null;
 
 $completionRate = $totalRequests > 0 ? round(($completedCount / $totalRequests) * 100, 1) : 0;
 
-// Category breakdown
-$byCategory = $db->fetchAll("SELECT * FROM vw_requests_by_category");
+// Category breakdown (direct query instead of vw_requests_by_category)
+$byCategory = $db->fetchAll(
+    "SELECT c.name AS category_name, c.icon AS category_icon,
+            COUNT(r.id) AS request_count,
+            COUNT(CASE WHEN r.status = 'Pending' THEN 1 END) AS pending,
+            COUNT(CASE WHEN r.status = 'In Progress' THEN 1 END) AS in_progress,
+            COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS completed
+     FROM categories c
+     LEFT JOIN requests r ON c.id = r.category_id AND r.is_archived = 0
+     WHERE c.is_active = 1
+     GROUP BY c.id, c.name, c.icon
+     ORDER BY request_count DESC"
+);
 
-// Priority breakdown (active requests only)
+// Priority breakdown
 $byPriority = $db->fetchAll(
     "SELECT COALESCE(priority, 'Unset') AS priority, COUNT(*) AS count
      FROM requests WHERE is_archived = 0
      GROUP BY priority
-     ORDER BY FIELD(priority, 'High','Medium','Low','Unset')"
+     ORDER BY FIELD(priority, 'High','Medium','Low', NULL)"
 );
 $priorityTotal = array_sum(array_column($byPriority, 'count')) ?: 1;
 
@@ -37,7 +65,6 @@ $daily = $db->fetchAll(
      GROUP BY DATE(created_at)
      ORDER BY day ASC"
 );
-// Fill missing days with 0
 $dailyMap = [];
 foreach ($daily as $d) { $dailyMap[$d['day']] = (int)$d['count']; }
 $dailySeries = [];
@@ -47,9 +74,17 @@ for ($i = 13; $i >= 0; $i--) {
 }
 $dailyMax = max(array_column($dailySeries, 'count')) ?: 1;
 
-// Top staff by completed tasks
+// Top staff by completed tasks (direct query instead of vw_staff_workload)
 $topStaff = $db->fetchAll(
-    "SELECT * FROM vw_staff_workload ORDER BY completed_tasks DESC, active_tasks ASC LIMIT 5"
+    "SELECT u.id, u.name, u.email, u.is_active,
+            COUNT(CASE WHEN r.status IN ('Pending','In Progress') THEN 1 END) AS active_tasks,
+            COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS completed_tasks,
+            COUNT(r.id) AS total_tasks
+     FROM users u
+     LEFT JOIN requests r ON u.id = r.assigned_to AND r.is_archived = 0
+     WHERE u.role = 'staff'
+     GROUP BY u.id, u.name, u.email, u.is_active
+     ORDER BY completed_tasks DESC, active_tasks ASC LIMIT 5"
 );
 
 // Recently completed

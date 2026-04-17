@@ -84,17 +84,7 @@ $requests = $db->fetchAll(
 );
 
 $categories = $db->fetchAll("SELECT id, name FROM categories WHERE is_active = 1 ORDER BY display_order");
-$staffList = $db->fetchAll(
-    "SELECT u.id, u.name,
-            COALESCE(GROUP_CONCAT(c.id ORDER BY c.display_order), '') AS category_ids,
-            COALESCE(GROUP_CONCAT(c.name ORDER BY c.display_order SEPARATOR ', '), '') AS category_names
-     FROM users u
-     LEFT JOIN staff_categories sc ON sc.user_id = u.id
-     LEFT JOIN categories c ON c.id = sc.category_id AND c.is_active = 1
-     WHERE u.role='staff' AND u.is_active=1
-     GROUP BY u.id, u.name
-     ORDER BY u.name"
-);
+$staffList = $db->fetchAll("SELECT id, name FROM users WHERE role='staff' AND is_active=1 ORDER BY name");
 
 include __DIR__ . '/../frontend/includes/admin-header.php';
 $flash = getFlash();
@@ -208,15 +198,12 @@ $flash = getFlash();
                     </div>
                     <div class="form-group">
                         <label class="form-label">Assign to staff</label>
-                        <select name="staff_id" class="form-control" id="modalStaffSelect" required>
+                        <select name="staff_id" class="form-control" required>
                             <option value="">-- Select staff --</option>
                             <?php foreach ($staffList as $s): ?>
-                                <option value="<?= $s['id'] ?>" data-categories="<?= htmlspecialchars($s['category_ids']) ?>" data-name="<?= htmlspecialchars($s['name']) ?>" data-specs="<?= htmlspecialchars($s['category_names']) ?>">
-                                    <?= htmlspecialchars($s['name']) ?><?= $s['category_names'] ? ' — ' . htmlspecialchars($s['category_names']) : '' ?>
-                                </option>
+                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <small class="text-muted" style="font-size:12px;display:block;margin-top:4px;">★ = specialty matches this request's category.</small>
                     </div>
                 </div>
             </form>
@@ -229,30 +216,10 @@ $flash = getFlash();
 </div>
 
 <script>
-function rankStaffByCategory(categoryId) {
-    const select = document.getElementById('modalStaffSelect');
-    if (!select) return;
-    const placeholder = select.querySelector('option[value=""]');
-    const options = Array.from(select.querySelectorAll('option[value]:not([value=""])'));
-    const matches = [], others = [];
-    options.forEach(opt => {
-        const cats = (opt.dataset.categories || '').split(',').filter(Boolean);
-        const isMatch = cats.includes(String(categoryId));
-        const name = opt.dataset.name;
-        const specs = opt.dataset.specs;
-        opt.textContent = (isMatch ? '★ ' : '') + name + (specs ? ' — ' + specs : '');
-        (isMatch ? matches : others).push(opt);
-    });
-    select.innerHTML = '';
-    if (placeholder) select.appendChild(placeholder);
-    matches.concat(others).forEach(o => select.appendChild(o));
-}
-
 function openAssignModal(req) {
     document.getElementById('modalTitle').textContent = req.title;
     document.getElementById('modalReqId').value = req.id;
     document.getElementById('modalPriority').value = req.priority || '';
-    rankStaffByCategory(req.category_id);
     document.getElementById('modalDetails').innerHTML = `
         <p><strong>Student:</strong> ${req.creator_name} (${req.creator_email})</p>
         <p><strong>Category:</strong> ${req.category_name}</p>
@@ -260,7 +227,7 @@ function openAssignModal(req) {
         <p><strong>Location:</strong> ${req.location || 'N/A'}, Room ${req.room_number || 'N/A'}</p>
         <p style="margin-top:8px"><strong>Description:</strong></p>
         <p style="color:var(--text-secondary);line-height:1.6">${req.description}</p>
-        ${req.image_url ? '<div class="image-preview mt-1"><img src="' + '<?= APP_URL ?>/' + req.image_url + '"></div>' : ''}
+        ${req.image_url ? '<div class="image-preview mt-1"><img src="/' + req.image_url + '"></div>' : ''}
     `;
     document.getElementById('assignModal').classList.add('show');
 }

@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/../backend/includes/Auth.php';
 require_once __DIR__ . '/../backend/includes/helpers.php';
 Auth::requireRole('admin');
@@ -90,17 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign'])) {
     }
 }
 
-$staffList = $db->fetchAll(
-    "SELECT u.id, u.name,
-            COALESCE(GROUP_CONCAT(c.id ORDER BY c.display_order), '') AS category_ids,
-            COALESCE(GROUP_CONCAT(c.name ORDER BY c.display_order SEPARATOR ', '), '') AS category_names
-     FROM users u
-     LEFT JOIN staff_categories sc ON sc.user_id = u.id
-     LEFT JOIN categories c ON c.id = sc.category_id AND c.is_active = 1
-     WHERE u.role='staff' AND u.is_active=1
-     GROUP BY u.id, u.name
-     ORDER BY u.name"
-);
+$staffList = $db->fetchAll("SELECT id, name FROM users WHERE role='staff' AND is_active=1 ORDER BY name");
 
 include __DIR__ . '/../frontend/includes/admin-header.php';
 $flash = getFlash();
@@ -118,10 +110,10 @@ $flash = getFlash();
     <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><h4>Completed</h4><div class="value"><?= $metrics['completed'] ?></div></div></div>
 </div>
 
-<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-    <div class="stat-card"><div class="stat-info"><h4>Avg response time</h4><div class="value" style="font-size:1.3rem"><?= $avgResponse['hours'] ?? 'N/A' ?> hrs</div></div></div>
-    <div class="stat-card"><div class="stat-info"><h4>Avg completion time</h4><div class="value" style="font-size:1.3rem"><?= $avgCompletion['hours'] ?? 'N/A' ?> hrs</div></div></div>
-    <div class="stat-card"><div class="stat-info"><h4>Active staff</h4><div class="value" style="font-size:1.3rem"><?= $staffCount['count'] ?></div></div></div>
+<div class="stats-grid stats-grid-compact">
+    <div class="stat-card"><div class="stat-info"><h4>Avg response time</h4><div class="value stat-value-lg"><?= $avgResponse['hours'] ?? 'N/A' ?> hrs</div></div></div>
+    <div class="stat-card"><div class="stat-info"><h4>Avg completion time</h4><div class="value stat-value-lg"><?= $avgCompletion['hours'] ?? 'N/A' ?> hrs</div></div></div>
+    <div class="stat-card"><div class="stat-info"><h4>Active staff</h4><div class="value stat-value-lg"><?= $staffCount['count'] ?></div></div></div>
 </div>
 
 <!-- Filters -->
@@ -166,12 +158,12 @@ $flash = getFlash();
                     <?php foreach ($requests as $req): ?>
                     <tr>
                         <td><span class="request-title" onclick="openAssignModal(<?= htmlspecialchars(json_encode($req)) ?>)"><?= htmlspecialchars($req['title']) ?></span></td>
-                        <td style="font-size:13px"><?= htmlspecialchars($req['creator_name']) ?></td>
+                        <td class="text-sm"><?= htmlspecialchars($req['creator_name']) ?></td>
                         <td><?= htmlspecialchars($req['category_name']) ?></td>
                         <td><?= statusBadge($req['status']) ?></td>
                         <td><?= priorityBadge($req['priority']) ?></td>
-                        <td class="text-muted" style="font-size:13px"><?= htmlspecialchars($req['assignee_name']) ?></td>
-                        <td class="text-muted" style="font-size:13px"><?= timeAgo($req['created_at']) ?></td>
+                        <td class="text-muted text-sm"><?= htmlspecialchars($req['assignee_name']) ?></td>
+                        <td class="text-muted text-sm"><?= timeAgo($req['created_at']) ?></td>
                         <td><button class="btn btn-outline btn-sm" onclick="openAssignModal(<?= htmlspecialchars(json_encode($req)) ?>)">View / Assign</button></td>
                     </tr>
                     <?php endforeach; ?>
@@ -190,7 +182,7 @@ $flash = getFlash();
         </div>
         <div class="modal-body">
             <div id="modalDetails"></div>
-            <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
+            <hr class="modal-separator">
             <form method="POST" id="assignForm">
                 <?= csrfField() ?>
                 <input type="hidden" name="request_id" id="modalReqId">
@@ -207,15 +199,12 @@ $flash = getFlash();
                     </div>
                     <div class="form-group">
                         <label class="form-label">Assign to staff</label>
-                        <select name="staff_id" class="form-control" id="modalStaffSelect" required>
+                        <select name="staff_id" class="form-control" required>
                             <option value="">-- Select staff --</option>
                             <?php foreach ($staffList as $s): ?>
-                                <option value="<?= $s['id'] ?>" data-categories="<?= htmlspecialchars($s['category_ids']) ?>" data-name="<?= htmlspecialchars($s['name']) ?>" data-specs="<?= htmlspecialchars($s['category_names']) ?>">
-                                    <?= htmlspecialchars($s['name']) ?><?= $s['category_names'] ? ' — ' . htmlspecialchars($s['category_names']) : '' ?>
-                                </option>
+                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <small class="text-muted" style="font-size:12px;display:block;margin-top:4px;">★ = specialty matches this request's category.</small>
                     </div>
                 </div>
             </form>
@@ -228,38 +217,20 @@ $flash = getFlash();
 </div>
 
 <script>
-function rankStaffByCategory(categoryId) {
-    const select = document.getElementById('modalStaffSelect');
-    if (!select) return;
-    const placeholder = select.querySelector('option[value=""]');
-    const options = Array.from(select.querySelectorAll('option[value]:not([value=""])'));
-    const matches = [], others = [];
-    options.forEach(opt => {
-        const cats = (opt.dataset.categories || '').split(',').filter(Boolean);
-        const isMatch = cats.includes(String(categoryId));
-        const name = opt.dataset.name;
-        const specs = opt.dataset.specs;
-        opt.textContent = (isMatch ? '★ ' : '') + name + (specs ? ' — ' + specs : '');
-        (isMatch ? matches : others).push(opt);
-    });
-    select.innerHTML = '';
-    if (placeholder) select.appendChild(placeholder);
-    matches.concat(others).forEach(o => select.appendChild(o));
-}
-
 function openAssignModal(req) {
     document.getElementById('modalTitle').textContent = req.title;
     document.getElementById('modalReqId').value = req.id;
     document.getElementById('modalPriority').value = req.priority || '';
-    rankStaffByCategory(req.category_id);
     document.getElementById('modalDetails').innerHTML = `
         <p><strong>Student:</strong> ${req.creator_name} (${req.creator_email})</p>
         <p><strong>Category:</strong> ${req.category_name}</p>
         <p><strong>Status:</strong> ${req.status}</p>
         <p><strong>Location:</strong> ${req.location || 'N/A'}, Room ${req.room_number || 'N/A'}</p>
-        <p style="margin-top:8px"><strong>Description:</strong></p>
-        <p style="color:var(--text-secondary);line-height:1.6">${req.description}</p>
-        ${req.image_url ? '<div class="image-preview mt-1"><img src="' + '<?= APP_URL ?>/' + req.image_url + '"></div>' : ''}
+        <div class="modal-description">
+            <p><strong>Description:</strong></p>
+            <p>${req.description}</p>
+        </div>
+        ${req.image_url ? '<div class="image-preview mt-1"><img src="/' + req.image_url + '"></div>' : ''}
     `;
     document.getElementById('assignModal').classList.add('show');
 }

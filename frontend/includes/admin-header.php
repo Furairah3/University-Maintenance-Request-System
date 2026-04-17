@@ -15,10 +15,10 @@ $profileImage = Auth::getProfileImage();
 </head>
 <body>
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar" style="background:#0f172a;">
+    <aside class="sidebar admin-sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo" style="background:#dc2626;">🛡</div>
-            <div><h2><?= APP_NAME ?></h2><small>Admin Panel</small></div>
+            <div class="logo">AU</div>
+            <div><h2>Smart Hostel</h2><small>Admin · Ashesi</small></div>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -42,7 +42,7 @@ $profileImage = Auth::getProfileImage();
                 <?php if ($profileImage): ?>
                     <img src="<?= APP_URL . '/' . htmlspecialchars($profileImage) ?>" alt="Profile" class="user-avatar" style="object-fit:cover;">
                 <?php else: ?>
-                    <div class="user-avatar" style="background:#dc2626;"><?= $userInitial ?></div>
+                    <div class="user-avatar"><?= $userInitial ?></div>
                 <?php endif; ?>
                 <div class="user-details">
                     <div class="name"><?= htmlspecialchars(Auth::getUserName()) ?></div>

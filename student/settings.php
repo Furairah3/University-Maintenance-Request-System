@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/../frontend/includes/student-header.php';
 ?>
 
-<div style="display:flex;flex-direction:column;gap:20px;max-width:700px;">
+<div class="form-max-width flex flex-column gap-xl">
 
     <!-- Profile picture -->
     <div class="card">
@@ -160,17 +160,17 @@ include __DIR__ . '/../frontend/includes/student-header.php';
                 <div class="alert alert-success"><?= htmlspecialchars($photoSuccess) ?></div>
             <?php endif; ?>
 
-            <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
-                <div style="width:96px;height:96px;border-radius:50%;overflow:hidden;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:600;flex-shrink:0;">
+            <div class="flex gap-xl align-items-center flex-wrap">
+                <div class="profile-avatar">
                     <?php if (!empty($user['profile_image'])): ?>
                         <img src="<?= APP_URL . '/' . htmlspecialchars($user['profile_image']) ?>?v=<?= time() ?>"
-                             alt="Profile picture" style="width:100%;height:100%;object-fit:cover;">
+                             alt="Profile picture">
                     <?php else: ?>
                         <?= strtoupper(substr($user['name'], 0, 1)) ?>
                     <?php endif; ?>
                 </div>
 
-                <div style="flex:1;min-width:240px;">
+                <div class="flex-1" style="min-width:240px;">
                     <form method="POST" action="" enctype="multipart/form-data" style="margin-bottom:8px;">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="upload_photo">

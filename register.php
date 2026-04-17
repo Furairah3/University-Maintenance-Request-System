@@ -41,10 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <canvas id="bgCanvas" class="bg-canvas"></canvas>
 <div class="auth-page">
-    <div class="auth-container fade-in">
+    <div class="auth-container">
+        <div class="auth-brand">Ashesi University</div>
         <div class="auth-card">
             <div class="auth-logo">
-                <div class="logo-icon">🏠</div>
+                <div class="logo-icon">AU</div>
                 <h1>Create Account</h1>
                 <p>Register with your Ashesi email</p>
             </div>

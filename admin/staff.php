@@ -92,15 +92,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Staff list with workload
+// Staff list with workload (direct query, no view needed)
 $staff = $db->fetchAll(
     "SELECT u.id, u.name, u.email, u.is_active, u.last_login, u.created_at,
-            COALESCE(w.active_tasks, 0) AS active_tasks,
-            COALESCE(w.completed_tasks, 0) AS completed_tasks,
-            COALESCE(w.total_tasks, 0) AS total_tasks
+            COUNT(CASE WHEN r.status IN ('Pending','In Progress') THEN 1 END) AS active_tasks,
+            COUNT(CASE WHEN r.status = 'Completed' THEN 1 END) AS completed_tasks,
+            COUNT(r.id) AS total_tasks
      FROM users u
-     LEFT JOIN vw_staff_workload w ON w.id = u.id
+     LEFT JOIN requests r ON u.id = r.assigned_to AND r.is_archived = 0
      WHERE u.role = 'staff'
+     GROUP BY u.id, u.name, u.email, u.is_active, u.last_login, u.created_at
      ORDER BY u.is_active DESC, u.name ASC"
 );
 

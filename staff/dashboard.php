@@ -103,13 +103,13 @@ $flash = getFlash();
                             </span>
                         </td>
                         <td><?= htmlspecialchars($task['category_name']) ?></td>
-                        <td style="font-size:13px"><?= htmlspecialchars($task['student_name']) ?></td>
+                        <td class="text-sm"><?= htmlspecialchars($task['student_name']) ?></td>
                         <td><?= priorityBadge($task['priority']) ?></td>
                         <td><?= statusBadge($task['status']) ?></td>
-                        <td class="text-muted" style="font-size:13px"><?= timeAgo($task['created_at']) ?></td>
+                        <td class="text-muted text-sm"><?= timeAgo($task['created_at']) ?></td>
                         <td>
                             <?php if ($task['status'] === 'Pending'): ?>
-                                <form method="POST" style="display:inline">
+                                <form method="POST" class="form-inline">
                                     <?= csrfField() ?>
                                     <input type="hidden" name="request_id" value="<?= $task['id'] ?>">
                                     <input type="hidden" name="new_status" value="In Progress">
@@ -117,7 +117,7 @@ $flash = getFlash();
                                     <button class="btn btn-primary btn-sm" onclick="return confirm('Start working on this task?')">Start</button>
                                 </form>
                             <?php elseif ($task['status'] === 'In Progress'): ?>
-                                <form method="POST" style="display:inline">
+                                <form method="POST" class="form-inline">
                                     <?= csrfField() ?>
                                     <input type="hidden" name="request_id" value="<?= $task['id'] ?>">
                                     <input type="hidden" name="new_status" value="Completed">
@@ -125,7 +125,7 @@ $flash = getFlash();
                                     <button class="btn btn-success btn-sm" onclick="return confirm('Mark this task as completed?')">Complete</button>
                                 </form>
                             <?php else: ?>
-                                <span class="text-muted" style="font-size:12px">Done</span>
+                                <span class="text-muted text-xs">Done</span>
                             <?php endif; ?>
                         </td>
                     </tr>

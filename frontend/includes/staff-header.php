@@ -13,10 +13,10 @@ $userInitial = strtoupper(substr(Auth::getUserName() ?? 'S', 0, 1));
 </head>
 <body>
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar" style="background:#1a2332;">
+    <aside class="sidebar" id="sidebar" style="background:linear-gradient(180deg,#7A1825 0%,#4A0E1A 100%);">
         <div class="sidebar-brand">
-            <div class="logo" style="background:#d97706;">🔧</div>
-            <div><h2><?= APP_NAME ?></h2><small>Staff Portal</small></div>
+            <div class="logo">AU</div>
+            <div><h2>Smart Hostel</h2><small>Staff · Ashesi</small></div>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -26,7 +26,7 @@ $userInitial = strtoupper(substr(Auth::getUserName() ?? 'S', 0, 1));
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
-                <div class="user-avatar" style="background:#d97706;"><?= $userInitial ?></div>
+                <div class="user-avatar"><?= $userInitial ?></div>
                 <div class="user-details">
                     <div class="name"><?= htmlspecialchars(Auth::getUserName()) ?></div>
                     <div class="role">Maintenance Staff</div>

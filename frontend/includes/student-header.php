@@ -22,10 +22,10 @@ $profileImage = Auth::getProfileImage();
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo">🏠</div>
+            <div class="logo">AU</div>
             <div>
-                <h2><?= APP_NAME ?></h2>
-                <small>Student Portal</small>
+                <h2>Smart Hostel</h2>
+                <small>Ashesi University</small>
             </div>
         </div>
         <nav class="sidebar-nav">
@@ -57,7 +57,7 @@ $profileImage = Auth::getProfileImage();
         <div class="sidebar-footer">
             <div class="user-info">
                 <?php if ($profileImage): ?>
-                    <img src="<?= APP_URL . '/' . htmlspecialchars($profileImage) ?>" alt="Profile" class="user-avatar" style="object-fit:cover;">
+                    <img src="<?= APP_URL . '/' . htmlspecialchars($profileImage) ?>" alt="Profile" class="user-avatar">
                 <?php else: ?>
                     <div class="user-avatar"><?= $userInitial ?></div>
                 <?php endif; ?>
@@ -77,7 +77,7 @@ $profileImage = Auth::getProfileImage();
                 <h1><?= $pageTitle ?? 'Dashboard' ?></h1>
             </div>
             <div class="topbar-right">
-                <div style="position:relative">
+                <div class="notifications-container">
                     <button class="btn-icon" onclick="this.nextElementSibling.classList.toggle('show')">
                         🔔
                         <?php if ($unreadCount > 0): ?><span class="notification-dot"></span><?php endif; ?>
@@ -85,9 +85,9 @@ $profileImage = Auth::getProfileImage();
                     <div class="notifications-dropdown" id="notifDropdown">
                         <div class="notif-header">
                             <h4>Notifications</h4>
-                            <a href="notifications.php" style="font-size:12px">View all</a>
+                            <a href="notifications.php" class="text-xs">View all</a>
                         </div>
-                        <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">
+                        <div class="notifications-empty">
                             <?= $unreadCount > 0 ? "$unreadCount new notifications" : "No new notifications" ?>
                         </div>
                     </div>
