@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>403 - Access Denied</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/hostel-system/frontend/css/style.css">
+    <link rel="stylesheet" href="<?= APP_URL ?>/frontend/css/style.css">
 </head>
 <body>
 <div class="auth-page">
@@ -17,7 +17,7 @@
                 You don't have permission to access this page.<br>
                 This area is restricted to authorized personnel only.
             </p>
-            <a href="/hostel-system/login.php" class="btn btn-primary">Back to Login</a>
+            <a href="<?= APP_URL ?>/login.php" class="btn btn-primary">Back to Login</a>
         </div>
     </div>
 </div>
