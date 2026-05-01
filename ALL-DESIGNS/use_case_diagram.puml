@@ -1,0 +1,288 @@
+@startuml Smart_Hostel_Maintenance_Use_Case_Diagram
+
+
+' SMART HOSTEL MAINTENANCE REQUEST SYSTEM - USE CASE DIAGRAM
+' Course: CS415 Software Engineering | Group 11
+' Ashesi University | Class of 2027 - Cohort A
+
+
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+
+skinparam usecase {
+    BackgroundColor #E8F4FD
+    BorderColor #2C3E50
+    FontSize 11
+    FontColor #2C3E50
+    ArrowColor #34495E
+    StereotypeFontSize 10
+}
+
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2C3E50
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #2C3E50
+    FontSize 14
+    FontStyle bold
+    RoundCorner 10
+}
+
+skinparam note {
+    BackgroundColor #FFF9C4
+    BorderColor #F9A825
+    FontSize 10
+}
+
+' ============================================================
+' ACTORS
+' ============================================================
+
+actor "Student" as Student #90CAF9
+actor "Administrator" as Admin #A5D6A7
+actor "Maintenance\nStaff" as Staff #FFCC80
+actor "System" as System #CE93D8
+
+' ============================================================
+' SYSTEM BOUNDARY
+' ============================================================
+
+rectangle "Smart Hostel Maintenance Request System" {
+
+    ' --------------------------------------------------------
+    ' AUTHENTICATION & ACCESS CONTROL
+    ' --------------------------------------------------------
+    package "Authentication & Access Control" {
+        usecase "Register with\nUniversity Email" as UC_REG #BBDEFB
+        usecase "Login" as UC_LOGIN #BBDEFB
+        usecase "Logout" as UC_LOGOUT #BBDEFB
+        usecase "Enforce Role-Based\nAccess Control" as UC_RBAC #E1BEE7
+        usecase "Hash Password\n(bcrypt)" as UC_HASH #E1BEE7
+        usecase "Auto-Logout on\nSession Timeout\n(15 min)" as UC_TIMEOUT #E1BEE7
+        usecase "Rate Limit\nLogin Attempts" as UC_RATE #E1BEE7
+    }
+
+    ' --------------------------------------------------------
+    ' STUDENT MODULE
+    ' --------------------------------------------------------
+    package "Student Module" {
+        usecase "Submit Maintenance\nRequest" as UC_SUBMIT #BBDEFB
+        usecase "Attach Image\n(JPEG/PNG, max 5MB)" as UC_IMAGE #BBDEFB
+        usecase "Select Category\n(Electrical, Plumbing,\nFurniture, HVAC, Other)" as UC_CAT #BBDEFB
+        usecase "View Personal\nDashboard" as UC_DASH #BBDEFB
+        usecase "View Request\nHistory & Status" as UC_HISTORY #BBDEFB
+        usecase "View Request\nDetail" as UC_DETAIL_S #BBDEFB
+        usecase "Re-open Completed\nRequest (48hr Window)" as UC_REOPEN #BBDEFB
+        usecase "Manage Notification\nPreferences" as UC_NOTIF_PREF #BBDEFB
+    }
+
+    ' --------------------------------------------------------
+    ' ADMIN MODULE
+    ' --------------------------------------------------------
+    package "Admin Module" {
+        usecase "View Centralized\nDashboard\n(All Requests)" as UC_ADMIN_DASH #C8E6C9
+        usecase "Filter Requests\n(Status, Category,\nPriority, Date)" as UC_FILTER #C8E6C9
+        usecase "Search Requests\n(Student Name /\nRequest Title)" as UC_SEARCH #C8E6C9
+        usecase "View Full Request\nDetails & Image" as UC_DETAIL_A #C8E6C9
+        usecase "Set Request\nPriority\n(High/Medium/Low)" as UC_PRIORITY #C8E6C9
+        usecase "Assign Request\nto Staff" as UC_ASSIGN #C8E6C9
+        usecase "Bulk Status\nUpdate\n(Multi-Select)" as UC_BULK #C8E6C9
+        usecase "Create Staff\nAccount" as UC_CREATE_STAFF #C8E6C9
+        usecase "Edit Staff\nDetails" as UC_EDIT_STAFF #C8E6C9
+        usecase "Deactivate Staff\nAccount" as UC_DEACT_STAFF #C8E6C9
+        usecase "View Staff\nWorkload Count" as UC_WORKLOAD #C8E6C9
+        usecase "View Avg Response\nTime Metric" as UC_METRIC_RESP #C8E6C9
+        usecase "View Avg Completion\nTime Metric" as UC_METRIC_COMP #C8E6C9
+        usecase "View Charts\n(By Category\n& Priority)" as UC_CHARTS #C8E6C9
+        usecase "Manage Request\nCategories\n(Add/Edit/Disable)" as UC_MANAGE_CAT #C8E6C9
+        usecase "Archive Request\n(Soft Delete)" as UC_ARCHIVE #C8E6C9
+    }
+
+    ' --------------------------------------------------------
+    ' MAINTENANCE STAFF MODULE
+    ' --------------------------------------------------------
+    package "Maintenance Staff Module" {
+        usecase "View Assigned\nTasks List" as UC_TASKS #FFE0B2
+        usecase "View Task Detail\n& Image" as UC_DETAIL_M #FFE0B2
+        usecase "Update Task Status\n(Pending → In Progress\n→ Completed)" as UC_UPDATE #FFE0B2
+        usecase "View Active\nTask Count" as UC_COUNT #FFE0B2
+    }
+
+    ' --------------------------------------------------------
+    ' NOTIFICATION MODULE
+    ' --------------------------------------------------------
+    package "Notification Module" {
+        usecase "Send Email\nNotification" as UC_EMAIL #E1BEE7
+        usecase "Display In-App\nNotification\n(Bell Icon)" as UC_INAPP #E1BEE7
+        usecase "Record Status\nChange in\nHistory Log" as UC_LOG_STATUS #E1BEE7
+    }
+
+    ' --------------------------------------------------------
+    ' INFRASTRUCTURE / SYSTEM
+    ' --------------------------------------------------------
+    package "Infrastructure" {
+        usecase "Validate File\nUpload\n(Type & Size)" as UC_VALIDATE #E1BEE7
+        usecase "Log Errors\n(Structured Logging)" as UC_LOG_ERR #E1BEE7
+        usecase "Automated Daily\nDatabase Backup" as UC_BACKUP #E1BEE7
+    }
+}
+
+' ============================================================
+' STUDENT RELATIONSHIPS
+' ============================================================
+
+Student --> UC_REG
+Student --> UC_LOGIN
+Student --> UC_LOGOUT
+Student --> UC_SUBMIT
+Student --> UC_DASH
+Student --> UC_HISTORY
+Student --> UC_DETAIL_S
+Student --> UC_REOPEN
+Student --> UC_NOTIF_PREF
+
+' ============================================================
+' ADMIN RELATIONSHIPS
+' ============================================================
+
+Admin --> UC_LOGIN
+Admin --> UC_LOGOUT
+Admin --> UC_ADMIN_DASH
+Admin --> UC_FILTER
+Admin --> UC_SEARCH
+Admin --> UC_DETAIL_A
+Admin --> UC_PRIORITY
+Admin --> UC_ASSIGN
+Admin --> UC_BULK
+Admin --> UC_CREATE_STAFF
+Admin --> UC_EDIT_STAFF
+Admin --> UC_DEACT_STAFF
+Admin --> UC_WORKLOAD
+Admin --> UC_METRIC_RESP
+Admin --> UC_METRIC_COMP
+Admin --> UC_CHARTS
+Admin --> UC_MANAGE_CAT
+Admin --> UC_ARCHIVE
+
+' ============================================================
+' MAINTENANCE STAFF RELATIONSHIPS
+' ============================================================
+
+Staff --> UC_LOGIN
+Staff --> UC_LOGOUT
+Staff --> UC_TASKS
+Staff --> UC_DETAIL_M
+Staff --> UC_UPDATE
+Staff --> UC_COUNT
+
+' ============================================================
+' SYSTEM RELATIONSHIPS
+' ============================================================
+
+System --> UC_RBAC
+System --> UC_HASH
+System --> UC_TIMEOUT
+System --> UC_RATE
+System --> UC_EMAIL
+System --> UC_INAPP
+System --> UC_LOG_STATUS
+System --> UC_VALIDATE
+System --> UC_LOG_ERR
+System --> UC_BACKUP
+
+' ============================================================
+' INCLUDE RELATIONSHIPS (<<include>>)
+' ============================================================
+
+UC_REG ..> UC_HASH : <<include>>
+UC_LOGIN ..> UC_RBAC : <<include>>
+UC_LOGIN ..> UC_HASH : <<include>>
+UC_SUBMIT ..> UC_CAT : <<include>>
+UC_SUBMIT ..> UC_VALIDATE : <<include>>
+UC_UPDATE ..> UC_LOG_STATUS : <<include>>
+UC_UPDATE ..> UC_EMAIL : <<include>>
+UC_UPDATE ..> UC_INAPP : <<include>>
+UC_ASSIGN ..> UC_EMAIL : <<include>>
+UC_PRIORITY ..> UC_LOG_STATUS : <<include>>
+UC_REOPEN ..> UC_LOG_STATUS : <<include>>
+UC_REOPEN ..> UC_EMAIL : <<include>>
+UC_CREATE_STAFF ..> UC_HASH : <<include>>
+UC_BULK ..> UC_EMAIL : <<include>>
+UC_BULK ..> UC_LOG_STATUS : <<include>>
+
+' ============================================================
+' EXTEND RELATIONSHIPS (<<extend>>)
+' ============================================================
+
+UC_IMAGE ..> UC_SUBMIT : <<extend>>
+UC_IMAGE ..> UC_VALIDATE : <<include>>
+
+' ============================================================
+' NOTES
+' ============================================================
+
+note right of UC_SUBMIT
+  Categories:
+  - Electrical
+  - Plumbing
+  - Furniture
+  - HVAC
+  - Other
+  (Admin can add more)
+end note
+
+note right of UC_UPDATE
+  Status flow is strict:
+  Pending → In Progress → Completed
+  Skipping steps is blocked
+  by state machine validation
+end note
+
+note right of UC_REOPEN
+  Only available within
+  48 hours after status
+  is set to Completed
+end note
+
+note bottom of UC_RBAC
+  Three roles enforced server-side:
+  Student | Admin | Staff
+  Unauthorized access returns
+  HTTP 403 Forbidden
+end note
+
+note right of UC_TIMEOUT
+  Session expires after
+  15 minutes of inactivity.
+  User warned 1 minute
+  before auto-logout.
+end note
+
+note right of UC_RATE
+  Login: 5 attempts/min
+  API: 100 requests/min
+  Returns HTTP 429
+end note
+
+' ============================================================
+' LEGEND
+' ============================================================
+
+legend bottom left
+  |= Color |= Module |
+  | <#BBDEFB> | Student Module |
+  | <#C8E6C9> | Admin Module |
+  | <#FFE0B2> | Maintenance Staff Module |
+  | <#E1BEE7> | System / Infrastructure |
+  --
+  Smart Hostel Maintenance Request System
+  CS415 Software Engineering - Group 11
+  Ashesi University | 2025-2026
+endlegend
+
+@enduml
