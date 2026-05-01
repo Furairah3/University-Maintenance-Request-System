@@ -1,0 +1,42 @@
+# =====================================================
+# Smart Hostel — .gitignore
+# =====================================================
+
+# Real config with credentials — NEVER commit
+config/db.php
+
+# User-uploaded content (request photos, profile pictures)
+uploads/*
+!uploads/.gitkeep
+!uploads/avatars/
+uploads/avatars/*
+!uploads/avatars/.gitkeep
+
+# Old/duplicate copy that lived inside the project
+smart-hostel/
+
+# Local diagnostic files (admin should run them locally only)
+make_admin.php
+debug.php
+test.php
+
+# IDE / editor metadata
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-*
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# PHP / Composer (if you add it later)
+vendor/
+composer.lock
+
+# Logs
+*.log
+error_log
