@@ -27,6 +27,32 @@ SET @sql := IF(@col_exists = 0,
     'SELECT "users.avatar_path already exists"');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+-- profession column (staff specialization)
+SET @col_exists := (SELECT COUNT(*) FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'users' AND COLUMN_NAME = 'profession');
+SET @sql := IF(@col_exists = 0,
+    'ALTER TABLE users ADD COLUMN profession VARCHAR(50) NULL',
+    'SELECT "users.profession already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- requests.parent_request_id column (links a reopened request to its original)
+SET @col_exists := (SELECT COUNT(*) FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'requests' AND COLUMN_NAME = 'parent_request_id');
+SET @sql := IF(@col_exists = 0,
+    'ALTER TABLE requests ADD COLUMN parent_request_id INT NULL, ADD INDEX idx_parent_request (parent_request_id)',
+    'SELECT "requests.parent_request_id already exists"');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- ---- password_resets table ----
+CREATE TABLE IF NOT EXISTS password_resets (
+    user_id INT PRIMARY KEY,
+    token CHAR(64) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (token),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- ---- categories table (in case your old DB lacks it) ----
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,

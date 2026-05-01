@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('student','admin','staff') NOT NULL DEFAULT 'student',
     room_number VARCHAR(20) DEFAULT NULL,
     avatar_path VARCHAR(255) DEFAULT NULL,
+    profession VARCHAR(50) DEFAULT NULL,
     is_verified TINYINT(1) NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -51,8 +52,10 @@ CREATE TABLE IF NOT EXISTS requests (
     status ENUM('Pending','In Progress','Completed') NOT NULL DEFAULT 'Pending',
     priority ENUM('High','Medium','Low') DEFAULT NULL,
     assigned_to INT DEFAULT NULL,
+    parent_request_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_parent_request (parent_request_id),
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
@@ -102,6 +105,16 @@ CREATE TABLE IF NOT EXISTS reminders (
     INDEX (request_id, created_at),
     FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- PASSWORD RESETS TABLE — one active token per user, 30-minute expiry
+CREATE TABLE IF NOT EXISTS password_resets (
+    user_id INT PRIMARY KEY,
+    token CHAR(64) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (token),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- DEFAULT ADMIN ACCOUNT (password: Admin@1234) — pre-verified
