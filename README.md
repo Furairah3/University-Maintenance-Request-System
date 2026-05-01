@@ -21,11 +21,11 @@ Students submit issues. Admins assign the right staff. Staff resolve and update.
 
 ## Built with
 
-- **PHP 8** — backend, authentication, business logic
-- **MySQL 8** — database with full audit trail
-- **HTML / CSS / Vanilla JS** — no Bootstrap, no React, no frameworks
-- **Custom SMTP client** — email notifications without PHPMailer
-- **InfinityFree** — free hosting
+- **PHP 8** - backend, authentication, business logic
+- **MySQL 8** - database with full audit trail
+- **HTML / CSS / Vanilla JS** - no Bootstrap, no React, no frameworks
+- **Custom SMTP client** - email notifications without PHPMailer
+- **InfinityFree** - free hosting
 
 ---
 
@@ -74,7 +74,7 @@ define('SMTP_PASS', 'your-16-char-app-password');
 
 Get the app password: Google Account → Security → 2-Step Verification → App Passwords.
 
-Test it at `/admin/test_email.php` — shows the full SMTP transcript.
+Test it at `/admin/test_email.php` - shows the full SMTP transcript.
 
 ---
 
@@ -101,7 +101,7 @@ Test it at `/admin/test_email.php` — shows the full SMTP transcript.
 
 ## Project
 
-**CS415 Software Engineering — Group 11 — Ashesi University, Class of 2027 Cohort A**
+**CS415 Software Engineering - Group 11 - Ashesi University, Class of 2027 Cohort A**
 
 | Name | Role |
 |------|------|
