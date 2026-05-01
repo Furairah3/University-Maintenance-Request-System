@@ -4,6 +4,7 @@ A maintenance request tracking system for Ashesi University hostels.
 Students submit issues. Admins assign the right staff. Staff resolve and update. Everyone is notified automatically.
 
 **Live:** https://smarthostel.rf.gd/smart-hostel/
+
 **Figma:** https://www.figma.com/design/IpIOI2H0S6IHa4XTDtdF5m/Smart-Hostel-Management-%E2%80%93-UI-Design?node-id=0-1&t=pyYIYm71KH02GymY-0
 
 ---
